@@ -1,5 +1,5 @@
 server:
-  port: 8091
+  port: 8090
 
 # 线程池配置
 thread:
@@ -15,10 +15,10 @@ thread:
 # 数据库配置；启动时配置数据库资源信息
 spring:
   datasource:
-    username: root
-    password: 123456
-    url: jdbc:mysql://127.0.0.1:3306/xfg_frame_archetype?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=true
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: postgres
+    password: postgres
+    url: jdbc:postgresql://192.168.119.129:5432/ai-rag-knowledge
+    driver-class-name: org.postgresql.Driver
   hikari:
     pool-name: Retail_HikariCP
     minimum-idle: 15 #最小空闲连接数量
@@ -29,6 +29,24 @@ spring:
     connection-timeout: 30000 #数据库连接超时时间,默认30秒，即30000
     connection-test-query: SELECT 1
   type: com.zaxxer.hikari.HikariDataSource
+  # 配置ai接口
+  ai:
+    vectorstore:
+      pgvector:
+        index-type: hnsw
+        distance-type: cosine_distance
+        dimensions: 1536
+        max-document-batch-size: 10000
+    openai:
+      api-key: sk-
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/
+      chat:
+        options:
+          model: qwen3-14b
+          temperature: 0.7
+      embedding:
+        options:
+          model: text-embedding-v4
 
 # MyBatis 配置【如需使用记得打开】
 #mybatis:
