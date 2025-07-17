@@ -30,7 +30,8 @@ public class RagAnswerAdvisor implements BaseAdvisor {
 
     // 提示模板：包含 {question_answer_context} 占位符
     private final String userTextAdvise = """
-        \nContext information is below, surrounded by ---------------------\n
+        Context information is below, surrounded by ---------------------
+        
         ---------------------
         {question_answer_context}
         ---------------------
