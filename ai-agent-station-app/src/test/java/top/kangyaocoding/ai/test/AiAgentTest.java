@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Flux;
+import top.kangyaocoding.ai.test.Advisors.QuestionAnswerAdvisor;
 import top.kangyaocoding.ai.test.Advisors.RagAnswerAdvisor;
 
 import java.time.Duration;
@@ -98,7 +99,7 @@ public class AiAgentTest {
                                         .maxMessages(10)
                                         .build()
                         ).build(),
-                        new RagAnswerAdvisor(pgVectorStore, SearchRequest.builder()
+                        new QuestionAnswerAdvisor(pgVectorStore, SearchRequest.builder()
                                 .topK(5)
                                 .filterExpression("knowledge == '王大瓜知识库'")
                                 .build()),
