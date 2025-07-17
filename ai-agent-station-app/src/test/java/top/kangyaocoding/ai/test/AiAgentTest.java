@@ -77,19 +77,19 @@ public class AiAgentTest {
                 .build();
         chatClient = ChatClient.builder(chatModel)
                 .defaultSystem("""
-                            你是一个 AI Agent 智能体，可以根据用户输入的信息自动生成 Markdown 技术文章，并通过文件系统工具保存，最后使用钉钉机器人工具JavaSDKMCPClient_send_text_message推送通知。今天是 {current_date}。
+                        你是一个 AI Agent 智能体，可以根据用户输入的信息自动生成 Markdown 技术文章，并通过文件系统工具保存，最后使用钉钉机器人工具JavaSDKMCPClient_send_text_message推送通知。今天是 {current_date}。
                         
-                            你擅长使用 Planning 模式来分步骤完成任务，具体流程如下：
+                        你擅长使用 Planning 模式来分步骤完成任务，具体流程如下：
                         
-                            1. 分析用户的输入内容，理解需求并生成结构化的 Markdown 技术文章；
-                            2. 使用文件系统工具创建md文件，并将文章写入md该文件；保存文件路径为：E:/桌面文件/记事本/mcp_file_system；
-                            3. 提取以下结构化信息：
-                               - 文章标题（需包含技术点）
-                               - 文章标签（多个用英文逗号隔开）
-                               - 文章简述（不超过 100 字）
-                            4. 使用钉钉机器人工具将文章标题、简述及保存路径作为纯文本消息发送出去；
+                        1. 分析用户的输入内容，理解需求并生成结构化的 Markdown 技术文章；
+                        2. 使用文件系统工具创建md文件，并将文章写入md该文件；保存文件路径为：E:/桌面文件/记事本/mcp_file_system；
+                        3. 提取以下结构化信息：
+                           - 文章标题（需包含技术点）
+                           - 文章标签（多个用英文逗号隔开）
+                           - 文章简述（不超过 100 字）
+                        4. 使用钉钉机器人工具将文章标题、简述及保存路径作为纯文本消息发送出去；
                         
-                            请根据以上规则自动规划任务流程，并调用相应的工具完成操作。
+                        请根据以上规则自动规划任务流程，并调用相应的工具完成操作。
                         """)
                 .defaultToolCallbacks(new SyncMcpToolCallbackProvider(fileSystemMcpClient(), mcpDingdingBotClient()).getToolCallbacks())
                 .defaultAdvisors(
@@ -98,11 +98,9 @@ public class AiAgentTest {
                                         .maxMessages(10)
                                         .build()
                         ).build(),
-
-                        // TODO 如果去掉 new RagAnswerAdvisor 这部分就可以正常处理整个流程
                         new RagAnswerAdvisor(pgVectorStore, SearchRequest.builder()
                                 .topK(5)
-                                .filterExpression("knowledge == '知识库名称-v4'")
+                                .filterExpression("knowledge == '王大瓜知识库'")
                                 .build()),
                         SimpleLoggerAdvisor.builder().build()
                 ).build();
@@ -119,19 +117,19 @@ public class AiAgentTest {
         Prompt prompt = Prompt.builder()
                 .messages(new UserMessage(
                         """
-                                    你是一个 AI Agent 智能体，可以根据用户输入的信息自动生成 Markdown 技术文章，并通过文件系统工具保存，最后使用钉钉机器人工具JavaSDKMCPClient_send_text_message推送通知。今天是 {current_date}。
+                                你是一个 AI Agent 智能体，可以根据用户输入的信息自动生成 Markdown 技术文章，并通过文件系统工具保存，最后使用钉钉机器人工具JavaSDKMCPClient_send_text_message推送通知。今天是 {current_date}。
                                 
-                                    你擅长使用 Planning 模式来分步骤完成任务，具体流程如下：
+                                你擅长使用 Planning 模式来分步骤完成任务，具体流程如下：
                                 
-                                    1. 分析用户的输入内容，理解需求并生成结构化的 Markdown 技术文章；
-                                    2. 使用文件系统工具，保存文件路径为：E:/桌面文件/记事本/mcp_file_system；创建.md文件，并将文章内容写入该文件；
-                                    3. 提取以下结构化信息：
-                                       - 文章标题（需包含技术点）
-                                       - 文章标签（多个用英文逗号隔开）
-                                       - 文章简述（不超过 100 字）
-                                    4. 使用钉钉机器人工具将文章标题、简述及保存路径作为纯文本消息发送出去；
+                                1. 分析用户的输入内容，理解需求并生成结构化的 Markdown 技术文章；
+                                2. 使用文件系统工具，保存文件路径为：E:/桌面文件/记事本/mcp_file_system；创建.md文件，并将文章内容写入该文件；
+                                3. 提取以下结构化信息：
+                                   - 文章标题（需包含技术点）
+                                   - 文章标签（多个用英文逗号隔开）
+                                   - 文章简述（不超过 100 字）
+                                4. 使用钉钉机器人工具将文章标题、简述及保存路径作为纯文本消息发送出去；
                                 
-                                    请根据以上规则自动规划任务流程，并调用相应的工具完成操作。
+                                请根据以上规则自动规划任务流程，并调用相应的工具完成操作。
                                 """
                 )).build();
         ChatResponse chatResponse = chatModel.call(prompt);
@@ -151,14 +149,13 @@ public class AiAgentTest {
 
     @Test
     public void test_mcp_sync_client() {
-        String userInput = "生成一篇有关Java知识的文章";
+        String userInput = "王大瓜的个人信息";
         log.info("用户输入：{}", userInput);
         String content = chatClient.prompt(userInput)
                 .system(s -> s.param("current_date", LocalDate.now().toString()))
                 .call()
                 .content();
         log.info("AI助手输出：{}", content);
-
     }
 
     @Test
@@ -231,18 +228,18 @@ public class AiAgentTest {
                                         .maxMessages(100)
                                         .build()
                         ).build(),
-                        // TODO 如果去掉 new RagAnswerAdvisor 这部分就可以正常处理整个流程
                         new RagAnswerAdvisor(pgVectorStore, SearchRequest.builder()
                                 .topK(5)
                                 .filterExpression("knowledge == 'article-prompt-words'")
-                                .build())
+                                .build()),
+                        new SimpleLoggerAdvisor()
                 )
                 .defaultOptions(OpenAiChatOptions.builder()
                         .model("qwen2.5-7b-instruct-1m")
                         .build())
                 .build();
 
-        log.info("\n用户输入：{}", "生成一篇有关Java基础知识的文章");
+        log.info("\n\nchatClient01 用户输入：{}", "生成一篇有关Java基础知识的文章");
         String content = chatClient01
                 .prompt("生成一篇文章Java基础知识文档")
                 .system(s -> s.param("current_date", LocalDate.now().toString()))
@@ -283,7 +280,7 @@ public class AiAgentTest {
                 .build();
 
         String userInput = "生成一篇文章，要求如下 \r\n" + content;
-        log.info("\nUser Input: {}", userInput);
+        log.info("\n\nchatClient02 用户输入：{}", userInput);
         String assistantResponse = chatClient02
                 .prompt(userInput)
                 .system(s -> s.param("current_date", LocalDate.now().toString()))
@@ -292,7 +289,7 @@ public class AiAgentTest {
                         .param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 100))
                 .call().content();
 
-        log.info("\nAI Assistant Response: {}", assistantResponse);
+        log.info("\nAI 助手响应：{}", assistantResponse);
     }
 
 
